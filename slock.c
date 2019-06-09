@@ -62,6 +62,71 @@ die(const char *errstr, ...)
 #include <linux/oom.h>
 
 static void
+writemessage(Display *dpy, Window win, int screen)
+{
+	int len, line_len, width, height, i, j, k, tab_replace, tab_size;
+	XGCValues gr_values;
+	XFontStruct *fontinfo;
+	XColor color, dummy;
+	GC gc;
+	fontinfo = XLoadQueryFont(dpy, text_size);
+	tab_size = 8 * XTextWidth(fontinfo, " ", 1);
+
+	XAllocNamedColor(dpy, DefaultColormap(dpy, screen),
+			 text_color, &color, &dummy);
+
+	gr_values.font = fontinfo->fid;
+	gr_values.foreground = color.pixel;
+	gc=XCreateGC(dpy,win,GCFont+GCForeground, &gr_values);
+
+
+	/*
+	 * Start formatting and drawing text
+	 */
+
+	len = strlen(message);
+
+	/* Max max line length (cut at '\n') */
+	line_len = 0;
+	k = 0;
+	for (i = j = 0; i < len; i++) {
+		if (message[i] == '\n') {
+			if (i - j > line_len)
+				line_len = i - j;
+			k++;
+			i++;
+			j = i;
+		}
+	}
+	/* If there is only one line */
+	if (line_len == 0)
+		line_len = len;
+
+	height = DisplayHeight(dpy, screen)*3/7 - (k*20)/3;
+	width  = (DisplayWidth(dpy, screen) - XTextWidth(fontinfo, message, line_len))/2;
+
+	/* Look for '\n' and print the text between them. */
+	for (i = j = k = 0; i <= len; i++) {
+		/* i == len is the special case for the last line */
+		if (i == len || message[i] == '\n') {
+			tab_replace = 0;
+			while (message[j] == '\t' && j < i) {
+				tab_replace++;
+				j++;
+			}
+
+			XDrawString(dpy, win, gc, width + tab_size*tab_replace, height + 20*k, message + j, i - j);
+			while (i < len && message[i] == '\n') {
+				i++;
+				j = i;
+				k++;
+			}
+		}
+	}
+}
+
+
+static void
 dontkillme(void)
 {
 	FILE *f;
@@ -194,6 +259,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 					                     locks[screen]->win,
 					                     locks[screen]->colors[color]);
 					XClearWindow(dpy, locks[screen]->win);
+					writemessage(dpy, locks[screen]->win, screen);
 				}
 				oldc = color;
 			}
@@ -292,7 +358,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 static void
 usage(void)
 {
-	die("usage: slock [-v] [cmd [arg ...]]\n");
+	die("usage: slock [-v] [-m message] [cmd [arg ...]]\n");
 }
 
 int
@@ -311,6 +377,9 @@ main(int argc, char **argv) {
 	case 'v':
 		fprintf(stderr, "slock-"VERSION"\n");
 		return 0;
+	case 'm':
+		message = EARGF(usage());
+		break;
 	default:
 		usage();
 	} ARGEND
@@ -355,10 +424,12 @@ main(int argc, char **argv) {
 	if (!(locks = calloc(nscreens, sizeof(struct lock *))))
 		die("slock: out of memory\n");
 	for (nlocks = 0, s = 0; s < nscreens; s++) {
-		if ((locks[s] = lockscreen(dpy, &rr, s)) != NULL)
+		if ((locks[s] = lockscreen(dpy, &rr, s)) != NULL) {
+			writemessage(dpy, locks[s]->win, s);
 			nlocks++;
-		else
+		} else {
 			break;
+		}
 	}
 	XSync(dpy, 0);
 
