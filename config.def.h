@@ -8,6 +8,9 @@ static const char *colorname[NUMCOLS] = {
 	[FAILED] = "#CC3333",   /* wrong password */
 };
 
+/* lock screen opacity */
+static const float alpha = 1;
+
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 1;
 
