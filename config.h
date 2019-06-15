@@ -15,7 +15,7 @@ static const float alpha = 0.3;
 static const int failonclear = 1;
 
 /* default message */
-static const char * message = "Enter password to unlock";
+static const char * message = "";
 
 /* text color */
 static const char * text_color = "#ffffff";
