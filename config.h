@@ -4,8 +4,8 @@ static const char *group = "nobody";
 
 static const char *colorname[NUMCOLS] = {
 	[INIT] =   "#000000",   /* after initialization */
-	[INPUT] =  "#282A36",   /* during input */
-	[FAILED] = "#FF5555",   /* wrong password */
+	[INPUT] =  "#282a36",   /* during input */
+	[FAILED] = "#ff5555",   /* wrong password */
 };
 
 /* lock screen opacity */
