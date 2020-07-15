@@ -8,7 +8,6 @@ simple screen locker utility for X.
 
 In order to build slock you need the Xlib header files.
 
-
 ## Installation
 
 Edit config.mk to match your local setup (slock is installed into
