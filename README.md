@@ -2,7 +2,7 @@
 
 simple screen locker utility for X. 
 
-![slock](https://i.imgur.com/foiK0uRt.gif)
+![slock](https://i.imgur.com/2R315sM.gif)
 
 ## Requirements
 
