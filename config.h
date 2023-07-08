@@ -3,9 +3,9 @@ static const char *user  = "user";
 static const char *group = "user";
 
 static const char *colorname[NUMCOLS] = {
-	[INIT] =   "#000000",   /* after initialization */
-	[INPUT] =  "#282c34",   /* during input */
-	[FAILED] = "#be5046",   /* wrong password */
+	[INIT] =   "#1d2021",   /* after initialization */
+	[INPUT] =  "#282828",   /* during input */
+	[FAILED] = "#cc241d",   /* wrong password */
 };
 
 /* lock screen opacity */
